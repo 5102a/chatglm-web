@@ -25,7 +25,7 @@ export function defaultSetting(): UserState {
 
       description: '',
       chatgpt_top_p: 100,
-      chatgpt_model: 'llm\\chatglm2-6b',
+      chatgpt_model: 'chatglm2-6b',
       chatgpt_memory: 50,
       chatgpt_max_length: 8192,
       chatgpt_temperature: 0.8,

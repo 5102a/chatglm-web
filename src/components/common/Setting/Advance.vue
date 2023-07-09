@@ -10,7 +10,7 @@ const userInfo = computed(() => userStore.userInfo)
 
 const chatgpt_top_p = ref(userInfo.value.chatgpt_top_p ?? 100)
 const chatgpt_memory = ref(userInfo.value.chatgpt_memory ?? 100)
-const chatgpt_model = ref(userInfo.value.chatgpt_model ?? 'llm\\chatglm2-6b')
+const chatgpt_model = ref(userInfo.value.chatgpt_model ?? 'chatglm2-6b')
 const chatgpt_max_length = ref(userInfo.value.chatgpt_max_length ?? 8192)
 const chatgpt_temperature = ref(userInfo.value.chatgpt_temperature ?? 0.8)
 const ms = useMessage()
@@ -32,11 +32,11 @@ function updateChatgptParams(options: Partial<UserInfo>) {
             filterable
             tag
             :options="[
-              { value: 'llm\\chatglm-6b', label: 'llm\\chatglm-6b' },
-              { value: 'llm\\chatglm2-6b', label: 'llm\\chatglm2-6b' },
-              { value: 'llm\\chatglm2-6b-int4', label: 'llm\\chatglm2-6b-int4' },
-              { value: 'llm\\vicuna-7b', label: 'llm\\vicuna-7b' },
-              { value: 'llm\\vicuna-13b', label: 'llm\\vicuna-13b' },
+              { value: 'chatglm-6b', label: 'chatglm-6b' },
+              { value: 'chatglm2-6b', label: 'chatglm2-6b' },
+              { value: 'chatglm2-6b-int4', label: 'chatglm2-6b-int4' },
+              { value: 'vicuna-7b', label: 'vicuna-7b' },
+              { value: 'vicuna-13b', label: 'vicuna-13b' },
             ]"
             @update:value="updateChatgptParams({ chatgpt_model })"
           />

@@ -1,32 +1,62 @@
-version: '3'
+version: '3.9'
 
 services:
-  app:
-    # 根据自己的系统选择x86_64还是aarch64
-    image: chatglm
-    # image: wenjing95/chatgpt-web-backend:aarch64
+  # app:
+  #   # 根据自己的系统选择x86_64还是aarch64
+  #   image: localagi/fastchat
+  #   ports:
+  #     - 21001:21001
+  #   environment:
+  #     model_path: /model
+  #     Device: cpu
+  #     Quantize: 16
+  #     # HOST，可选，默认值为 0.0.0.0
+  #     HOST: 0.0.0.0
+  #     # PORT，可选，默认值为 21001
+  #     PORT: 21001
+  #   volumes:
+  #     - /home/zkw/code/gpt/chatglm-6b-int4:/model
+  fastchat-controller:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: lc5102a/fastchat:v0.1
     ports:
-      - 3002:3002
-    environment:
-      model_path: /model
-      Device: cpu
-      Quantize: 16
-      # HOST，可选，默认值为 0.0.0.0
-      HOST: 0.0.0.0
-      # PORT，可选，默认值为 3002
-      PORT: 3002
+      - "21001:21001"
+    entrypoint: ["python3.9", "-m", "fastchat.serve.controller", "--host", "0.0.0.0", "--port", "21001"]
+  fastchat-model-worker:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    depends_on:
+      - fastchat-controller
     volumes:
-      - /home/zkw/code/gpt/chatglm-6b-int4:/model
+      - ${LLM}\THUDM:/THUDM
+      - huggingface:/root/.cache/huggingface
+    environment:
+      FASTCHAT_CONTROLLER_URL: http://fastchat-controller:21001
+    image: lc5102a/fastchat:v0.1 
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    entrypoint: ["python3.9", "-m", "fastchat.serve.model_worker", "--model-path", "THUDM/chatglm2-6b", "--worker-address", "http://fastchat-model-worker:21002", "--controller-address", "http://fastchat-controller:21001", "--host", "0.0.0.0", "--port", "21002"]
   nginx:
     depends_on:
-      - app
+      - fastchat-controller
     image: nginx:alpine
     ports:
       - '80:80'
+      - '8888:80'
     expose:
       - '80'
     volumes:
-      - ./nginx/html/:/etc/nginx/html/
+      - ../dist/:/etc/nginx/html/
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     links:
-      - app
+      - fastchat-model-worker
+volumes:
+  huggingface:
