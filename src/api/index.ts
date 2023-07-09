@@ -7,8 +7,9 @@ export function fetchChatConfig<T = any>() {
   })
 }
 
-export function fetchChatAPIProcess<T = any>(
+export async function fetchChatAPIProcess<T = any>(
   params: {
+    model: string
     prompt: string
     memory: number
     top_p: number
@@ -21,14 +22,20 @@ export function fetchChatAPIProcess<T = any>(
   },
 ) {
   return post<T>({
-    url: '/chat-process',
+    url: '/worker_generate_stream',
     data: {
+      model: params.model,
       prompt: params.prompt,
       options: params.options,
       memory: params.memory,
-      top_p: params.top_p,
+      top_p: params.top_p / 100,
       max_length: params.max_length,
+      max_new_tokens: 512,
+      repetition_penalty: 1.0,
       temperature: params.temperature,
+      stop: null,
+      stop_token_ids: null,
+      echo: false,
       is_knowledge: params.is_knowledge,
     },
     signal: params.signal,

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import { NRadioButton, NRadioGroup, NSlider, useMessage } from 'naive-ui'
+import { NRadioButton, NRadioGroup, NSelect, NSlider, useMessage } from 'naive-ui'
 import { useUserStore } from '@/store'
 import type { UserInfo } from '@/store/modules/user/helper'
 import { t } from '@/locales'
@@ -10,7 +10,8 @@ const userInfo = computed(() => userStore.userInfo)
 
 const chatgpt_top_p = ref(userInfo.value.chatgpt_top_p ?? 100)
 const chatgpt_memory = ref(userInfo.value.chatgpt_memory ?? 100)
-const chatgpt_max_length = ref(userInfo.value.chatgpt_max_length ?? 2048)
+const chatgpt_model = ref(userInfo.value.chatgpt_model ?? 'llm\\chatglm2-6b')
+const chatgpt_max_length = ref(userInfo.value.chatgpt_max_length ?? 8192)
 const chatgpt_temperature = ref(userInfo.value.chatgpt_temperature ?? 0.8)
 const ms = useMessage()
 
@@ -23,6 +24,24 @@ function updateChatgptParams(options: Partial<UserInfo>) {
 <template>
   <div class="p-4 space-y-5 min-h-[200px]">
     <div class="space-y-6">
+      <div class="flex flex-wrap items-center gap-4">
+        <span class="flex-shrink-0 w-[100px]">{{ $t('setting.chatgpt_model_title') }}</span>
+        <div class="w-[300px]">
+          <NSelect
+            v-model:value="chatgpt_model"
+            filterable
+            tag
+            :options="[
+              { value: 'llm\\chatglm-6b', label: 'llm\\chatglm-6b' },
+              { value: 'llm\\chatglm2-6b', label: 'llm\\chatglm2-6b' },
+              { value: 'llm\\chatglm2-6b-int4', label: 'llm\\chatglm2-6b-int4' },
+              { value: 'llm\\vicuna-7b', label: 'llm\\vicuna-7b' },
+              { value: 'llm\\vicuna-13b', label: 'llm\\vicuna-13b' },
+            ]"
+            @update:value="updateChatgptParams({ chatgpt_model })"
+          />
+        </div>
+      </div>
       <div class="flex flex-wrap items-center gap-4">
         <span class="flex-shrink-0 w-[100px]">{{ $t('setting.chatgpt_memory_title') }}</span>
         <div class="w-[300px]">
@@ -54,8 +73,8 @@ function updateChatgptParams(options: Partial<UserInfo>) {
             @update:value="updateChatgptParams({ chatgpt_top_p })"
           >
             <NRadioButton
-              :key="0"
-              :value="0"
+              :key="1"
+              :value="1"
             >
               {{ $t('setting.chatgpt_top_p_choice_1') }}
             </NRadioButton>
@@ -77,7 +96,7 @@ function updateChatgptParams(options: Partial<UserInfo>) {
       <div class="flex flex-wrap items-center gap-4">
         <span class="flex-shrink-0 w-[100px]" />
         <div class="w-[400px] text-gray-500">
-          <span v-if="0 === chatgpt_top_p">
+          <span v-if="1 === chatgpt_top_p">
             {{ $t('setting.chatgpt_top_p_1_memo') }}
           </span>
           <span v-else-if="50 === chatgpt_top_p">

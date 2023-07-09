@@ -7,6 +7,7 @@ export interface UserInfo {
   name: string
   description: string
   chatgpt_top_p: number
+  chatgpt_model: string
   chatgpt_memory: number
   chatgpt_max_length: number
   chatgpt_temperature: number
@@ -24,8 +25,9 @@ export function defaultSetting(): UserState {
 
       description: '',
       chatgpt_top_p: 100,
+      chatgpt_model: 'llm\\chatglm2-6b',
       chatgpt_memory: 50,
-      chatgpt_max_length: 2048,
+      chatgpt_max_length: 8192,
       chatgpt_temperature: 0.8,
     },
   }

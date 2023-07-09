@@ -8,8 +8,8 @@ services:
     ports:
       - 3002:3002
     environment:
-      model_path: "/model"
-      Device: "cpu"
+      model_path: /model
+      Device: cpu
       Quantize: 16
       # HOST，可选，默认值为 0.0.0.0
       HOST: 0.0.0.0

@@ -41,7 +41,7 @@ onMounted(() => {
         ChatGLM Web - {{ pkg.version }}
       </h2>
       <a
-        href="https://github.com/NCZkevin/chatglm-web"
+        href="https://github.com/5102a/chatglm-web"
         target="_blank"
         class="text-[#4b9e5f] relative flex items-center"
       >

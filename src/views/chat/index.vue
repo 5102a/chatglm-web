@@ -41,7 +41,21 @@ const { uuid } = route.params as { uuid: string }
 
 const dataSources = computed(() => chatStore.getChatByUuid(+uuid))
 const conversationList = computed(() => dataSources.value.filter(item => (!item.inversion && !item.error)))
+const defaultPrompt = 'SYSTEM:\r\n基于以下内容，用简洁和专业的中文回答用户问题。\r\nUSER:'
+const genRound = (req: string, res: string, i: number) => `\r\n\r\n[Round ${i}]\r\nUSER问：\r\n${req}\r\n\r\nASSISTANT答：\r\n${res}`
+const filter = (c: Chat.Chat) => !c.inversion && !c.error && c.text && !c.text.startsWith('server.')
+const getAllContext = (useCtx: boolean, message: string, i?: number) => {
+  if (!useCtx)
+    return [defaultPrompt, genRound(message, '', 1)]
 
+  let list = []
+  if (i !== undefined)
+    list = dataSources.value.slice(0, i)
+  else
+    list = dataSources.value
+  let round = 1
+  return [defaultPrompt, list.filter(filter).map(c => genRound(c.requestOptions.prompt, c.text, round++)), genRound(message, '', round)]
+}
 const prompt = ref<string>('')
 const isAudioPrompt = ref<boolean>(false)
 const loading = ref<boolean>(false)
@@ -73,6 +87,27 @@ function getServerErrorType(responseText: string) {
     return responseText.split(':')[1]
 
   return ''
+}
+
+function getLastText(textChunk: string) {
+  const textList = textChunk.split('\0')
+  let last = textList.pop()
+
+  while (!last && textList.length)
+    last = textList.pop()
+
+  try {
+    return {
+      isError: false,
+      data: JSON.parse(last || ''),
+    }
+  }
+  catch (error) {
+    return {
+      isError: true,
+      data: '',
+    }
+  }
 }
 
 function handleSubmit() {
@@ -334,8 +369,10 @@ async function onConversation() {
   scrollToBottom()
 
   try {
+    const prompt = getAllContext(usingContext.value, message).join()
     await fetchChatAPIProcess<Chat.ConversationResponse>({
-      prompt: message,
+      prompt,
+      model: userInfo.value.chatgpt_model,
       memory: userInfo.value.chatgpt_memory,
       top_p: userInfo.value.chatgpt_top_p,
       max_length: userInfo.value.chatgpt_max_length,
@@ -345,10 +382,8 @@ async function onConversation() {
       signal: controller.signal,
       onDownloadProgress: ({ event }) => {
         const xhr = event.target
-        let { responseText } = xhr
-        responseText = removeDataPrefix(responseText)
-
-        const isError = isServerError(responseText)
+        const { responseText } = xhr
+        const { data, isError } = getLastText(responseText)
         if (isError) {
           updateChat(
             +uuid,
@@ -366,15 +401,7 @@ async function onConversation() {
           return
         }
 
-        // SSE response format "data: xxx"
-        const lastIndex = responseText.lastIndexOf('data: ')
-        let chunk = responseText
-        if (lastIndex !== -1)
-          chunk = responseText.substring(lastIndex)
-
-        chunk = removeDataPrefix(chunk)
         try {
-          const data = JSON.parse(chunk)
           updateChat(
             +uuid,
             dataSources.value.length - 1,
@@ -479,8 +506,10 @@ async function onRegenerate(index: number) {
   )
 
   try {
+    const prompt = getAllContext(usingContext.value, message, index).join()
     await fetchChatAPIProcess<Chat.ConversationResponse>({
-      prompt: message,
+      prompt,
+      model: userInfo.value.chatgpt_model,
       memory: userInfo.value.chatgpt_memory,
       top_p: userInfo.value.chatgpt_top_p,
       max_length: userInfo.value.chatgpt_max_length,
@@ -490,10 +519,8 @@ async function onRegenerate(index: number) {
       signal: controller.signal,
       onDownloadProgress: ({ event }) => {
         const xhr = event.target
-        let { responseText } = xhr
-        responseText = removeDataPrefix(responseText)
-
-        const isError = isServerError(responseText)
+        const { responseText } = xhr
+        const { data, isError } = getLastText(responseText)
         if (isError) {
           updateChat(
             +uuid,
@@ -511,15 +538,7 @@ async function onRegenerate(index: number) {
           return
         }
 
-        // SSE response format "data: xxx"
-        const lastIndex = responseText.lastIndexOf('data: ')
-        let chunk = responseText
-        if (lastIndex !== -1)
-          chunk = responseText.substring(lastIndex)
-
-        chunk = removeDataPrefix(chunk)
         try {
-          const data = JSON.parse(chunk)
           updateChat(
             +uuid,
             index,

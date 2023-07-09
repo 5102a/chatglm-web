@@ -36,7 +36,7 @@ const userInfo = computed(() => userStore.userInfo)
 
         <span>
           <a
-            href="https://github.com/nczkevin/ChatGLM-web"
+            href="https://github.com/5102a/chatglm-web"
             target="_blank"
             class="text-[#4b9e5f] relative flex items-center"
           >

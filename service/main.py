@@ -169,7 +169,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     import os
-    model_path = os.getenv('model_path')
+    # model_path = os.getenv('model_path')
+    model_path = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), "THUDM\chatglm2-6b")
     # model_name = "THUDM/chatglm-6b"
     quantize = int(args.quantize)
     model = None
@@ -185,4 +187,4 @@ if __name__ == "__main__":
         else:
             model = AutoModel.from_pretrained(model_path, trust_remote_code=True).half().quantize(quantize).cuda()
     model = model.eval()
-    uvicorn.run(app, host=args.host, port=args.port)
+    uvicorn.run(app, host="127.0.0.1", port=args.port)

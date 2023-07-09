@@ -26,7 +26,7 @@ export default {
     failed: 'Failed',
     verify: 'Verify',
     unauthorizedTips: 'Unauthorized, please verify first.',
-    about_head: 'This project was created by Chanzhaoyu, and has been forked and modified by WenJing. Its released under the MIT License.',
+    about_head: 'The original authors of this project are Chanzhaoyu, WenJing, and NCZkevin. After being forked and modified by 5102a, it was open-sourced under the MIT license.',
     about_body: 'If you find this helpful, please give me a star on GitHub. If you would like to make a donate, please donate to the original author Chanzhaoyu. Thank you!',
   },
   chat: {
@@ -74,10 +74,11 @@ export default {
     theme: 'Theme',
     language: 'Language',
 
+    chatgpt_model_title: 'model',
     chatgpt_memory_title: 'ChatGLM\'s memory capacity',
     chatgpt_memory_memo: 'The stronger the memory, the more context ChatGLM can remember during conversations, but it may consume more costs.',
-    chatgpt_memory_choice_1: 'Normal Memory (5 logs)',
-    chatgpt_memory_choice_2: 'Medium Memory (20 logs)',
+    chatgpt_memory_choice_1: 'Normal Memory (1 logs)',
+    chatgpt_memory_choice_2: 'Medium Memory (50 logs)',
     chatgpt_memory_choice_3: 'Strong Memory (all logs)',
 
     chatgpt_top_p_title: 'The personality of ChatGLM',

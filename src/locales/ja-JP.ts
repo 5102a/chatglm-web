@@ -9,7 +9,7 @@ export default {
     wrong: '問題が発生しました。後でもう一度試してください。',
     success: '成功しました',
     failed: '失敗しました',
-    about_head: '作成者はChanzhaoyuで、編集者はWenJingです。ライセンスはMITです。',
+    about_head: 'このプロジェクトの元の作者はChanzhaoyu＆WenJing＆NCZkevinであり、5102aのフォークと変更を経て、MITライセンスに基づいてオープンソース化されました。',
     about_body: 'もしプロジェクトが役に立った場合は、Githubでスターをつけていただくか、元の作者に寄付をご検討いただけると幸いです。',
   },
   chat: {
@@ -46,10 +46,11 @@ export default {
     theme: 'テーマ',
     language: '言語',
 
+    chatgpt_model_title: 'モデル',
     chatgpt_memory_title: '記憶力',
     chatgpt_memory_memo: '記憶力が強いほど、ChatGptは会話中に覚えている文脈が多くなりますが、より多くのコストがかかる可能性があります。',
-    chatgpt_memory_choice_1: '記憶力が弱い(5件)',
-    chatgpt_memory_choice_2: '記憶力が普通(20件)',
+    chatgpt_memory_choice_1: '記憶力が弱い(1件)',
+    chatgpt_memory_choice_2: '記憶力が普通(50件)',
     chatgpt_memory_choice_3: '記憶力が強い(すべて)',
 
     chatgpt_top_p_title: '性格',
